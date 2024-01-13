@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://xgbn281uwg43"]
+
+[ext_resource type="Script" path="res://Scenes/Patron/patron_base.gd" id="1_jjpyp"]
+[ext_resource type="PackedScene" uid="uid://jvtv5agjjavu" path="res://Scenes/StateMachine/state_machine.tscn" id="2_gxps4"]
+[ext_resource type="Script" path="res://Scenes/Patron/patron_waiting.gd" id="3_pf4w1"]
+[ext_resource type="Script" path="res://Scenes/Patron/EscortState.gd" id="4_xn6g1"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0wtqd"]
+
+[node name="PatronBase" type="CharacterBody3D"]
+script = ExtResource("1_jjpyp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_0wtqd")
+
+[node name="StateMachine" parent="." node_paths=PackedStringArray("initial_state") instance=ExtResource("2_gxps4")]
+initial_state = NodePath("WaitingState")
+
+[node name="WaitingState" type="Node" parent="StateMachine" node_paths=PackedStringArray("patron")]
+script = ExtResource("3_pf4w1")
+patron = NodePath("../..")
+
+[node name="EscortState" type="Node" parent="StateMachine"]
+script = ExtResource("4_xn6g1")
+
+[node name="nav_agent" type="NavigationAgent3D" parent="."]
+unique_name_in_owner = true

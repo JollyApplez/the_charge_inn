@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://is1vx37t83ck"]
+
+[ext_resource type="Script" path="res://Scenes/Interactables/Chargers/charger.gd" id="1_earco"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qdjfv"]
+top_radius = 0.25
+bottom_radius = 0.25
+height = 0.1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_r07gv"]
+height = 0.1
+radius = 0.25
+
+[node name="ChargerSeat" type="Node3D"]
+script = ExtResource("1_earco")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("CylinderMesh_qdjfv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("CylinderShape3D_r07gv")
+
+[node name="NavigationObstacle3D" type="NavigationObstacle3D" parent="."]
+radius = 0.5
+
+[node name="StateMachine" type="Node" parent="."]

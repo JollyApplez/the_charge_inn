@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://cbrkp2t8ljsne"]
+
+[ext_resource type="PackedScene" uid="uid://cpvy0soetk8im" path="res://Assets/Models/player_character.glb" id="1_4fatc"]
+[ext_resource type="Script" path="res://Scenes/Player/player.gd" id="1_umalm"]
+[ext_resource type="Script" path="res://Scenes/Player/Camera.gd" id="3_oqphb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cmvcm"]
+size = Vector3(1, 1.48047, 1)
+
+[node name="Player" type="CharacterBody3D" groups=["Player"]]
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+script = ExtResource("1_umalm")
+metadata/_edit_lock_ = true
+
+[node name="Visuals" type="Node3D" parent="."]
+transform = Transform3D(-0.5, 0, -4.37114e-08, 0, 0.5, 0, 4.37114e-08, 0, -0.5, 0, 0, 0)
+
+[node name="player_character" parent="Visuals" instance=ExtResource("1_4fatc")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.759766, 0)
+shape = SubResource("BoxShape3D_cmvcm")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 7.002, 10)
+top_level = true
+script = ExtResource("3_oqphb")
+
+[node name="CameraRay" type="RayCast3D" parent="Camera3D"]
+
+[node name="InteractRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+target_position = Vector3(0, 0, -3)
+collision_mask = 4
+collide_with_areas = true
