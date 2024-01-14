@@ -40,17 +40,20 @@ script = ExtResource("3_oqphb")
 
 [node name="InteractRay" type="RayCast3D" parent="." node_paths=PackedStringArray("player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-target_position = Vector3(0, 0, -4)
+target_position = Vector3(0, 0, -3)
 collision_mask = 6
 collide_with_areas = true
+debug_shape_custom_color = Color(1, 0, 0, 1)
+debug_shape_thickness = 3
 script = ExtResource("4_w775y")
 player = NodePath("..")
 
 [node name="StateMachine" parent="." node_paths=PackedStringArray("initial_state") instance=ExtResource("4_bljs6")]
-initial_state = NodePath("Moving")
+initial_state = NodePath("Idle")
 
-[node name="Idle" type="Node" parent="StateMachine"]
+[node name="Idle" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("5_skdgr")
+player = NodePath("../..")
 
 [node name="Moving" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("6_cg16s")
@@ -66,7 +69,8 @@ script = ExtResource("8_xa54j")
 [node name="Carrying" type="Node" parent="StateMachine"]
 script = ExtResource("9_s6ait")
 
-[connection signal="interactable_collision_signal" from="InteractRay" to="StateMachine/Idle" method="_on_interact_ray_interactable_collision_signal"]
-[connection signal="interactable_collision_signal" from="InteractRay" to="StateMachine/Moving" method="_on_interact_ray_interactable_collision_signal"]
-[connection signal="interactable_collision_signal" from="InteractRay" to="StateMachine/Interacting" method="_on_interact_ray_interactable_collision_signal"]
+[connection signal="charger_collision_signal" from="InteractRay" to="StateMachine/Escorting" method="_on_interact_ray_charger_collision_signal"]
+[connection signal="patron_collision_signal" from="InteractRay" to="StateMachine/Idle" method="_on_interact_ray_patron_collision_signal"]
+[connection signal="patron_collision_signal" from="InteractRay" to="StateMachine/Moving" method="_on_interact_ray_patron_collision_signal"]
+[connection signal="patron_collision_signal" from="InteractRay" to="StateMachine/Interacting" method="_on_interact_ray_patron_collision_signal"]
 [connection signal="state_transition" from="StateMachine" to="." method="_on_state_machine_state_transition"]

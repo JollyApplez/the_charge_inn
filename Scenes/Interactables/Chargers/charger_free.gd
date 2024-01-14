@@ -1,11 +1,21 @@
 extends State
+class_name ChargerFree
 
+@export var charger: Charger
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+@onready var patron_target: Marker3D = $"../../PatronTarget"
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _state_enter():
 	pass
+
+func _state_exit():
+	pass
+
+func _state_update():
+	pass
+
+func _state_physics_update():
+	pass
+
+func _on_charger_seat_patron_occupied_charger_signal(patron: Patron) -> void:
+	Transitioned.emit(self, "occupied")

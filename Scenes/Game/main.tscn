@@ -32,6 +32,7 @@ patron_tolerance_range_max = 20
 level_entrance = NodePath("Entrance")
 level_exit = NodePath("Exit")
 patron_spawn = NodePath("PatronSpawn")
+patron_max = 5
 
 [node name="Exit" parent="Level_prototype" index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -27)

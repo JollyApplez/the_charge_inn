@@ -1,16 +1,23 @@
-[gd_scene load_steps=9 format=3 uid="uid://xgbn281uwg43"]
+[gd_scene load_steps=12 format=3 uid="uid://xgbn281uwg43"]
 
 [ext_resource type="Script" path="res://Scenes/Patron/patron_base.gd" id="1_jjpyp"]
 [ext_resource type="PackedScene" uid="uid://jvtv5agjjavu" path="res://Scenes/StateMachine/state_machine.tscn" id="2_gxps4"]
 [ext_resource type="Script" path="res://Scenes/Patron/patron_waiting.gd" id="3_pf4w1"]
 [ext_resource type="Script" path="res://Scenes/Patron/patron_escort.gd" id="4_vttrv"]
 [ext_resource type="Script" path="res://Scenes/Patron/patron_leaving_state.gd" id="5_gfg37"]
+[ext_resource type="Script" path="res://Scenes/Patron/patron_charging.gd" id="6_0fl73"]
 [ext_resource type="LabelSettings" uid="uid://dotaj460xg1cj" path="res://Assets/HUD_Text.tres" id="6_f2npb"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0wtqd"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_itm8u"]
 viewport_path = NodePath("HUD_Sprite/PatronViewport")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ui1o3"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fa62f"]
+bg_color = Color(0.356863, 0.698039, 0, 1)
 
 [node name="PatronBase" type="CharacterBody3D"]
 collision_layer = 2
@@ -40,6 +47,9 @@ patron = NodePath("../..")
 [node name="Leaving" type="Node" parent="StateMachine" node_paths=PackedStringArray("patron")]
 script = ExtResource("5_gfg37")
 patron = NodePath("../..")
+
+[node name="Charging" type="Node" parent="StateMachine"]
+script = ExtResource("6_0fl73")
 
 [node name="nav_agent" type="NavigationAgent3D" parent="."]
 unique_name_in_owner = true
@@ -80,4 +90,20 @@ text = "Escort E"
 label_settings = ExtResource("6_f2npb")
 horizontal_alignment = 1
 
+[node name="Charger" type="Label" parent="HUD_Sprite/PatronViewport/HUD/VBoxContainer"]
+layout_mode = 2
+text = "Current Charge
+"
+
+[node name="ChargeBar" type="ProgressBar" parent="HUD_Sprite/PatronViewport/HUD/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(256, 65)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_ui1o3")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fa62f")
+step = 0.1
+value = 50.0
+show_percentage = false
+
+[connection signal="fully_charged" from="." to="StateMachine/Charging" method="_on_patron_base_fully_charged"]
 [connection signal="state_transition" from="StateMachine" to="." method="_on_state_machine_state_transition"]

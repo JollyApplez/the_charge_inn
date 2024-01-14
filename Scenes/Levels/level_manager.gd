@@ -12,11 +12,12 @@ class_name LevelManager
 @export var patron_spawn: Node3D
 @export var patron_type: Array[PackedScene]
 
+@export var patron_max: int
 @export var queue_max_length: int
 
 var spawn_time: float
 var patron_queue: Array[Patron]
-
+var patron_total: Array[Patron]
 @onready var navigation_region_3d: NavigationRegion3D = $NavigationRegion3D
 
 
@@ -31,6 +32,7 @@ func spawn_patron():
 	var p = patron_type.pick_random()
 	p = p.instantiate()
 	patron_queue.append(p)
+	patron_total.append(p)
 	navigation_region_3d.add_child(p)
 	p.register_level_manager(self)
 	p.set_navigation_target(level_entrance.global_position)
@@ -53,15 +55,16 @@ func set_spawn_time() -> float:
 
 func unregister_from_queue(p: Patron):
 	patron_queue.erase(p)
-	
+func unregister_from_level(p: Patron):
+	patron_total.erase(p)
 func spawn_manager(delta: float):
 	if spawn_time <= 0:
-		var queue_length = patron_queue.size()
-		if queue_length < queue_max_length:
-			spawn_patron()
-		else:
-			pass 
-			#Missed patron logic
-		spawn_time = set_spawn_time()
+		if patron_total.size() < patron_max:
+			if patron_queue.size() < queue_max_length:
+				spawn_patron()
+			else:
+				pass 
+				#Missed patron logic
+			spawn_time = set_spawn_time()
 	else:
 		spawn_time -= delta

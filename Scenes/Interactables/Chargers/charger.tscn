@@ -1,6 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://is1vx37t83ck"]
+[gd_scene load_steps=10 format=3 uid="uid://is1vx37t83ck"]
 
 [ext_resource type="Script" path="res://Scenes/Interactables/Chargers/charger.gd" id="1_earco"]
+[ext_resource type="Script" path="res://Scenes/Interactables/Chargers/charger_free.gd" id="2_oa2ud"]
+[ext_resource type="Script" path="res://Scenes/StateMachine/StateMachine.gd" id="2_ytmo8"]
+[ext_resource type="Script" path="res://Scenes/Interactables/Chargers/charger_occupied.gd" id="3_ao7eg"]
+[ext_resource type="LabelSettings" uid="uid://dotaj460xg1cj" path="res://Assets/HUD_Text.tres" id="4_nplke"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_qdjfv"]
 top_radius = 0.25
@@ -10,6 +14,13 @@ height = 0.1
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_r07gv"]
 height = 0.1
 radius = 0.25
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_lgq5h"]
+height = 2.2
+radius = 1.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_tp42g"]
+viewport_path = NodePath("HUD_Sprite/ChargerViewport")
 
 [node name="ChargerSeat" type="Node3D"]
 script = ExtResource("1_earco")
@@ -25,4 +36,64 @@ shape = SubResource("CylinderShape3D_r07gv")
 [node name="NavigationObstacle3D" type="NavigationObstacle3D" parent="."]
 radius = 0.5
 
-[node name="StateMachine" type="Node" parent="."]
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("2_ytmo8")
+initial_state = NodePath("Free")
+
+[node name="Free" type="Node" parent="StateMachine"]
+script = ExtResource("2_oa2ud")
+
+[node name="Occupied" type="Node" parent="StateMachine" node_paths=PackedStringArray("charger")]
+script = ExtResource("3_ao7eg")
+charger = NodePath("../..")
+
+[node name="InteractableArea" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractableArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_lgq5h")
+
+[node name="PatronTarget" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+
+[node name="HUD_Sprite" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.677826, 0)
+billboard = 1
+texture = SubResource("ViewportTexture_tp42g")
+
+[node name="ChargerViewport" type="SubViewport" parent="HUD_Sprite"]
+transparent_bg = true
+size = Vector2i(258, 258)
+
+[node name="HUD" type="Control" parent="HUD_Sprite/ChargerViewport"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD_Sprite/ChargerViewport/HUD"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -30.5
+offset_right = 30.5
+offset_bottom = 40.0
+grow_horizontal = 2
+
+[node name="HUDLabel" type="Label" parent="HUD_Sprite/ChargerViewport/HUD/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Assign Seat"
+label_settings = ExtResource("4_nplke")
+horizontal_alignment = 1
+
+[connection signal="patron_occupied_charger_signal" from="." to="StateMachine/Free" method="_on_charger_seat_patron_occupied_charger_signal"]
+[connection signal="patron_occupied_charger_signal" from="." to="StateMachine/Occupied" method="_on_charger_seat_patron_occupied_charger_signal"]
+[connection signal="state_transition" from="StateMachine" to="." method="_on_state_machine_state_transition"]

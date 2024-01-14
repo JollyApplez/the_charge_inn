@@ -17,12 +17,12 @@ func _state_update():
 		interactable_state._escort_transition()
 		interactable.is_interactable = false
 		Transitioned.emit(self, "escorting")
-
+		
 func _state_physics_update():
 	pass
 
 
-func _on_interact_ray_interactable_collision_signal(node: Node3D, state: State) -> void:
+func _on_interact_ray_patron_collision_signal(node: Node3D, state: State) -> void:
 	interactable = node
 	
 	if node.current_state:

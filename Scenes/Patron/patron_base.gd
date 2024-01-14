@@ -7,7 +7,7 @@ class_name Patron
 @export var max_charge: float
 @export var anim_player: AnimationPlayer
 
-const SPEED = 5.0
+const SPEED = 3.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -16,14 +16,25 @@ var level_manager: LevelManager
 var player: CharacterBody3D
 var current_state: State
 var is_interactable := false
+var assigned_charger: Charger
 
 @onready var nav_agent: NavigationAgent3D = %nav_agent
-@onready var current_charge: float = 0
+@onready var current_charge: float = 0:
+	set(value):
+		if current_charge + value >= max_charge:
+			current_charge = max_charge
+			fully_charged.emit()
+		else:
+			current_charge = value
+		%ChargeBar.value = current_charge
+
+signal fully_charged()
+
 
 func _ready():
 	player = get_tree().get_first_node_in_group("Player")
-	
-	
+	%ChargeBar.max_value = max_charge
+	%ChargeBar.value = current_charge
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
@@ -64,3 +75,7 @@ func look_at_target(direction: Vector3):
 func _on_state_machine_state_transition(new_state: State) -> void:
 	current_state = new_state
 	print("changed state, new state: " + str(current_state))
+
+func kill():
+	queue_free()
+	level_manager.unregister_from_level(self)

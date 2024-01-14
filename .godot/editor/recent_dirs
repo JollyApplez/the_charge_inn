@@ -1,7 +1,7 @@
-res://Scenes/StateMachine
-res://Scenes/Player
 res://Scenes/Patron
-res://Scenes/Levels
+res://Scenes/StateMachine
 res://Scenes/Interactables/Chargers
+res://Scenes/Player
+res://Scenes/Levels
 res://Scenes/Interactables/Table
 res://Scenes/Game

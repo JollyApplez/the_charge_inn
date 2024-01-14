@@ -19,4 +19,4 @@ func _state_physics_update():
 	if navigation_target:
 		patron.move(navigation_target)
 		if patron.global_position.distance_to(navigation_target) <= 1: 
-			patron.queue_free()
+			patron.kill()

@@ -272,6 +272,8 @@ _data = {
 viewport_path = NodePath("HUD_Sprite/PatronViewport")
 
 [node name="BatteryPatron" node_paths=PackedStringArray("anim_player") instance=ExtResource("1_vvcmy")]
+load_per_sec = 5.0
+max_charge = 100.0
 anim_player = NodePath("Visuals/battery_patron/AnimationPlayer")
 
 [node name="CollisionShape3D" parent="." index="0"]

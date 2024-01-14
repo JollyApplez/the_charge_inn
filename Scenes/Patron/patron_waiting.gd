@@ -16,6 +16,7 @@ func _state_enter():
 
 func _state_exit():
 	hud_label.hide()
+	level_manager.unregister_from_queue(patron)
 
 func _state_update():
 	if !level_manager: 
@@ -36,7 +37,7 @@ func _state_physics_update():
 	if navigation_target: 
 		if collider == null:
 			patron.move(navigation_target)
-		if patron.position.distance_to(navigation_target) <= 1:
+		if patron.position.distance_to(navigation_target) <= 3:
 			patron.look_at_target(patron.global_position.direction_to(patron.player.global_position))
 			_tolerance_tick()
 
