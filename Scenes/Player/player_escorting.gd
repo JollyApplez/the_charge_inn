@@ -1,7 +1,7 @@
 extends State
-class_name PatronEscort
+class_name PlayerEscorting
 
-@onready var nav_agent: NavigationAgent3D = $"../../nav_agent"
+@export var player : Player
 
 func _state_enter():
 	pass
@@ -10,8 +10,7 @@ func _state_exit():
 	pass
 
 func _state_update():
-	pass
+	player.player_move()
 
 func _state_physics_update():
 	pass
-

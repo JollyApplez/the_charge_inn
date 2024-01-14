@@ -1,13 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://cbrkp2t8ljsne"]
+[gd_scene load_steps=12 format=3 uid="uid://cbrkp2t8ljsne"]
 
 [ext_resource type="PackedScene" uid="uid://cpvy0soetk8im" path="res://Assets/Models/player_character.glb" id="1_4fatc"]
 [ext_resource type="Script" path="res://Scenes/Player/player.gd" id="1_umalm"]
 [ext_resource type="Script" path="res://Scenes/Player/Camera.gd" id="3_oqphb"]
+[ext_resource type="PackedScene" uid="uid://jvtv5agjjavu" path="res://Scenes/StateMachine/state_machine.tscn" id="4_bljs6"]
+[ext_resource type="Script" path="res://Scenes/Player/InteractRay.gd" id="4_w775y"]
+[ext_resource type="Script" path="res://Scenes/Player/player_idle.gd" id="5_skdgr"]
+[ext_resource type="Script" path="res://Scenes/Player/player_moving.gd" id="6_cg16s"]
+[ext_resource type="Script" path="res://Scenes/Player/player_escorting.gd" id="7_kp6ag"]
+[ext_resource type="Script" path="res://Scenes/Player/player_interacting.gd" id="8_xa54j"]
+[ext_resource type="Script" path="res://Scenes/Player/player_carrying.gd" id="9_s6ait"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cmvcm"]
 size = Vector3(1, 1.48047, 1)
 
 [node name="Player" type="CharacterBody3D" groups=["Player"]]
+collision_mask = 3
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 script = ExtResource("1_umalm")
@@ -30,8 +38,35 @@ script = ExtResource("3_oqphb")
 
 [node name="CameraRay" type="RayCast3D" parent="Camera3D"]
 
-[node name="InteractRay" type="RayCast3D" parent="."]
+[node name="InteractRay" type="RayCast3D" parent="." node_paths=PackedStringArray("player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-target_position = Vector3(0, 0, -3)
-collision_mask = 4
+target_position = Vector3(0, 0, -4)
+collision_mask = 6
 collide_with_areas = true
+script = ExtResource("4_w775y")
+player = NodePath("..")
+
+[node name="StateMachine" parent="." node_paths=PackedStringArray("initial_state") instance=ExtResource("4_bljs6")]
+initial_state = NodePath("Moving")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("5_skdgr")
+
+[node name="Moving" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("6_cg16s")
+player = NodePath("../..")
+
+[node name="Escorting" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("7_kp6ag")
+player = NodePath("../..")
+
+[node name="Interacting" type="Node" parent="StateMachine"]
+script = ExtResource("8_xa54j")
+
+[node name="Carrying" type="Node" parent="StateMachine"]
+script = ExtResource("9_s6ait")
+
+[connection signal="interactable_collision_signal" from="InteractRay" to="StateMachine/Idle" method="_on_interact_ray_interactable_collision_signal"]
+[connection signal="interactable_collision_signal" from="InteractRay" to="StateMachine/Moving" method="_on_interact_ray_interactable_collision_signal"]
+[connection signal="interactable_collision_signal" from="InteractRay" to="StateMachine/Interacting" method="_on_interact_ray_interactable_collision_signal"]
+[connection signal="state_transition" from="StateMachine" to="." method="_on_state_machine_state_transition"]
